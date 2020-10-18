@@ -4,11 +4,11 @@ export function Homepage({
   inventory,
   setPage,
   activeproduct,
-  setActiveproduct,
+  setActiveproductid,
   cart,
   setCart,
   setInventory,
-  addToCart,
+  changeCart,
 }) {
   return inventory.map((entry) => {
     return (
@@ -17,7 +17,7 @@ export function Homepage({
         <div
           onClick={() => {
             setPage("activeproduct");
-            setActiveproduct(entry);
+            setActiveproductid(entry.id);
           }}
         >
           <div>{entry.name}</div>
@@ -30,7 +30,7 @@ export function Homepage({
         {entry.stock ? (
           <button
             onClick={() => {
-              addToCart(entry, true);
+              changeCart(entry, true);
             }}
           >
             ADD TO CART

@@ -1,24 +1,22 @@
 import React from "react";
 
-export function Cart({ cart, setCart, addToCart }) {
-  return cart.map((entry, index) => {
+export function Cart({ cart, changeCart, inventory }) {
+  return cart.map((entry) => {
+    const item = inventory.find((invitem) => {
+      return invitem.id === entry.id;
+    });
     return (
       <div>
-        <div>{entry.name}</div>
-        <div>${entry.price}</div>
+        <div>{item.name}</div>
+        <div>${item.price}</div>
         <button
           onClick={() => {
-            addToCart(entry, false);
-            setCart(
-              cart.filter((item, i) => {
-                return i !== index;
-              })
-            );
+            changeCart(item, false);
           }}
         >
           {" "}
-          {entry.name !== "Strong potion"
-            ? `Remove ${entry.name} from cart`
+          {item.name !== "Strong potion"
+            ? `Remove ${item.name} from cart`
             : "This potion is too strong for you traveler"}
         </button>
       </div>

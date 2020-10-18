@@ -6,7 +6,7 @@ export function Product({
   activeproduct,
   cart,
   setCart,
-  addToCart,
+  changeCart,
 }) {
   return (
     <div>
@@ -21,13 +21,15 @@ export function Product({
       {activeproduct.stock ? (
         <button
           onClick={() => {
-            addToCart(activeproduct, true);
+            changeCart(activeproduct, true);
             setCart([...cart, activeproduct]);
           }}
         >
           ADD TO CART
         </button>
-      ) : null}
+      ) : (
+        "out of stock."
+      )}
     </div>
   );
 }

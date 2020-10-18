@@ -38,17 +38,17 @@ function WhichPage({
   page,
   setPage,
   activeproduct,
-  setActiveproduct,
+  setActiveproductid,
   cart,
   setCart,
-  addToCart,
+  changeCart,
 }) {
   if (page === "homepage") {
     return (
       <Homepage
-        addToCart={addToCart}
+        changeCart={changeCart}
         activeproduct={activeproduct}
-        setActiveproduct={setActiveproduct}
+        setActiveproductid={setActiveproductid}
         setPage={setPage}
         inventory={inventory}
         setInventory={setInventory}
@@ -58,28 +58,41 @@ function WhichPage({
     );
   }
   if (page === "cart") {
-    return <Cart cart={cart} setCart={setCart} addToCart={addToCart}></Cart>;
+    return (
+      <Cart
+        cart={cart}
+        setCart={setCart}
+        changeCart={changeCart}
+        inventory={inventory}
+      ></Cart>
+    );
   }
   if (page === "activeproduct") {
     return (
       <Product
-        addToCart={addToCart}
+        changeCart={changeCart}
         cart={cart}
         setCart={setCart}
         activeproduct={activeproduct}
-        setActiveproduct={setActiveproduct}
+        setActiveproductid={setActiveproductid}
       />
     );
   }
 }
 
 function App() {
-  const [activeproduct, setActiveproduct] = React.useState(null);
+  const [activeproductid, setActiveproductid] = React.useState(null);
   const [page, setPage] = React.useState("homepage");
   const [cart, setCart] = React.useState([]);
-  const [inventory, setInventory] = React.useState(database);
-  function addToCart(current, add) {
-    console.log(inventory);
+  const [inventory, setInventory] = React.useState(
+    database.map((prod) => {
+      return { ...prod, id: Math.random().toString() };
+    })
+  );
+  const activeproduct = inventory.find((product) => {
+    return product.id === activeproductid;
+  });
+  function changeCart(current, add) {
     setInventory(
       inventory.map((item) => {
         if (item !== current) {
@@ -91,8 +104,18 @@ function App() {
         return { ...item, stock: item.stock + 1 };
       })
     );
-
-    setCart([...cart, current]);
+    if (add) {
+      setCart([...cart, { id: current.id }]);
+    } else {
+      setCart(
+        cart.filter((item) => {
+          if (item.id !== current.id) {
+            return true;
+          }
+          return false;
+        })
+      );
+    }
   }
   return (
     <div className="App">
@@ -111,11 +134,11 @@ function App() {
         CART
       </button>
       <WhichPage
-        addToCart={addToCart}
+        changeCart={changeCart}
         inventory={inventory}
         setInventory={setInventory}
         activeproduct={activeproduct}
-        setActiveproduct={setActiveproduct}
+        setActiveproductid={setActiveproductid}
         setPage={setPage}
         page={page}
         cart={cart}
