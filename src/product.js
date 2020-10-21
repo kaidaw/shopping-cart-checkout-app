@@ -22,7 +22,7 @@ export function Product({
         <button
           onClick={() => {
             changeCart(activeproduct, true);
-            setCart([...cart, activeproduct]);
+            //setCart([...cart, activeproduct]);
           }}
         >
           ADD TO CART

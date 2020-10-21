@@ -58,13 +58,26 @@ function WhichPage({
     );
   }
   if (page === "cart") {
-    return (
-      <Cart
-        cart={cart}
-        setCart={setCart}
-        changeCart={changeCart}
-        inventory={inventory}
-      ></Cart>
+    let total = 0;
+    for (let cartItem of cart) {
+      let inventoryItem = inventory.find((product) => {
+        return cartItem.id === product.id;
+      });
+      total += inventoryItem.price * cartItem.quantity;
+    }
+    return cart.length ? (
+      <div>
+        <Cart
+          cart={cart}
+          setCart={setCart}
+          changeCart={changeCart}
+          inventory={inventory}
+          setInventory={setInventory}
+        ></Cart>
+        <div>Total Price: ${total}</div>
+      </div>
+    ) : (
+      <div>Your Cart is currently empty.</div>
     );
   }
   if (page === "activeproduct") {
@@ -92,10 +105,25 @@ function App() {
   const activeproduct = inventory.find((product) => {
     return product.id === activeproductid;
   });
-  function changeCart(current, add) {
+  function changeCart(invItem, add) {
+    // function removeOne(basket) {
+    //   let newBasket = [];
+    //   let removed = false;
+    //   for (let item of basket) {
+    //     if (item.id !== invItem.id) {
+    //       newBasket.push(item);
+    //     } else if (!removed) {
+    //       removed = true;
+    //       continue;
+    //     } else {
+    //       newBasket.push(item);
+    //     }
+    //   }
+    //   return newBasket;
+    // }
     setInventory(
       inventory.map((item) => {
-        if (item !== current) {
+        if (item !== invItem) {
           return item;
         }
         if (add) {
@@ -104,17 +132,41 @@ function App() {
         return { ...item, stock: item.stock + 1 };
       })
     );
+    let cartItem = cart.find((object) => {
+      return object.id === invItem.id;
+    });
     if (add) {
-      setCart([...cart, { id: current.id }]);
+      if (!cartItem) {
+        setCart([...cart, { id: invItem.id, quantity: 1 }]);
+      } else {
+        setCart(
+          cart.map((cartItem) => {
+            if (cartItem.id !== invItem.id) {
+              return cartItem;
+            } else {
+              return { ...cartItem, quantity: cartItem.quantity + 1 };
+            }
+          })
+        );
+      }
     } else {
-      setCart(
-        cart.filter((item) => {
-          if (item.id !== current.id) {
-            return true;
-          }
-          return false;
-        })
-      );
+      if (cartItem.quantity > 1) {
+        setCart(
+          cart.map((cartItem) => {
+            if (cartItem.id !== invItem.id) {
+              return cartItem;
+            } else {
+              return { ...cartItem, quantity: cartItem.quantity - 1 };
+            }
+          })
+        );
+      } else {
+        setCart(
+          cart.filter((cartItem) => {
+            return cartItem.id !== invItem.id;
+          })
+        );
+      }
     }
   }
   return (
